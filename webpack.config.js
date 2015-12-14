@@ -9,13 +9,23 @@ const PATHS = {
 	build: path.join(__dirname, 'build')
 };
 
+process.env.BABEL_ENV = TARGET
+
 var common = {
 	entry: PATHS.app,
+	resolve: {
+		extensions: ['', '.js', '.jsx']
+	},
 	module: {
 		loaders: [
 			{
 				test: /\.css$/,
 				loaders: ['style', 'css'],
+				include: PATHS.app
+			},
+			{
+				test: /\.jsx?$/,
+				loaders: ['babel'],
 				include: PATHS.app
 			}
 		]
