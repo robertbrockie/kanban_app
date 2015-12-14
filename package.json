@@ -25,6 +25,7 @@
     "url": "git://github.com/robertbrockie/kanban_app.git"
   },
   "dependencies": {
+    "node-uuid": "^1.4.7",
     "react": "^0.14.3",
     "react-dom": "^0.14.3"
   }
