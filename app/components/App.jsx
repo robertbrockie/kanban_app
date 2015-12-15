@@ -6,8 +6,6 @@ import NoteStore from '../stores/NoteStore';
 
 export default class App extends React.Component {
 	render() {
-		const notes = this.state.notes;
-
 		return (
 			<div>
 				<button className="add-note" onClick={this.addNote}>+</button>
