@@ -5,7 +5,26 @@ import NoteActions from '../actions/NoteActions';
 import NoteStore from '../stores/NoteStore';
 import LaneActions from '../actions/LaneActions';
 import Editable from './Editable.jsx';
+import {DropTarget} from 'react-dnd';
+import ItemTypes from '../constants/itemTypes';
 
+const noteTarget = {
+	hover(targetProps, monitor) {
+		const sourceProps = monitor.getItem();
+		const sourceId = sourceProps.id;
+
+		if (!targetProps.lane.notes.length) {
+			LaneActions.attachToLane({
+				laneId: targetProps.lane.id,
+				noteId: sourceId
+			});
+		}
+	}
+}
+
+@DropTarget(ItemTypes.NOTE, noteTarget, (connect) => ({
+	connectDropTarget: connect.dropTarget()
+}))
 export default class Lane extends React.Component {
 	constructor(props) {
 		super(props);
@@ -17,13 +36,13 @@ export default class Lane extends React.Component {
 		this.editName = this.editName.bind(this, id);
 	}
 	render() {
-		const {lane, ...props} = this.props;
+		const {connectDropTarget, lane, ...props} = this.props;
 
-		return (
+		return connectDropTarget(
 			<div {...props}>
 				<div className="lane-header">
-					<Editable className="lane-name" 
-						value={lane.name} 
+					<Editable className="lane-name"
+						value={lane.name}
 						onEdit={this.editName} />
 					<div className="lane-add-note">
 						<button onClick={this.addNote}>+</button>
@@ -32,10 +51,11 @@ export default class Lane extends React.Component {
 				<AltContainer
 					stores={[NoteStore]}
 					inject={{
-						items: () => NoteStore.get(lane.notes)
+						notes: () => NoteStore.get(lane.notes)
 					}}
 				>
 					<Notes
+						onValueClick={this.activateNoteEdit}
 						onEdit={this.editNote}
 						onDelete={this.deleteNote} />
 				</AltContainer>
@@ -61,4 +81,10 @@ export default class Lane extends React.Component {
 			LaneActions.delete(id);
 		}
 	}
+	activateLaneEdit(id) {
+    LaneActions.update({id, editing: true});
+  }
+  activateNoteEdit(id) {
+    NoteActions.update({id, editing: true});
+  }
 }
